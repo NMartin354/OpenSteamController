@@ -1301,11 +1301,15 @@ static void updateReports(void) {
 
 	uint16_t tpad_x = 0;
 	uint16_t tpad_y = 0;
-
+	uint16_t tpad_x_2 = 0
+	uint16_t tpad_y_2 = 0
+	uint16_t tpad_x_diff = 0
+	uint16_t tpad_y_diff = 0
+tpad_x_diff = std::abs(&tpad_x_2-&tpad_x);
 	// Default to neutral position
 	controllerUsbData.statusReport.dPad = DPAD_NEUTRAL;
 
-	/*
+	
 	// Have Left Trackpad act as DPAD:
 	// Only check (and convert) finger position to DPAD location on click
 	if (getLeftTrackpadClickState()) {
@@ -1340,21 +1344,28 @@ static void updateReports(void) {
 			}
 		}
 	}
-	*/
+	
 
 	// Have Left Trackpad act as Left Analog:
+	/*
 	trackpadGetLastXY(L_TRACKPAD, &tpad_x, &tpad_y);
 	controllerUsbData.statusReport.leftAnalogX = convToPowerAJoyPos(tpad_x,
 		0, TPAD_MAX_X/2, TPAD_MAX_X);
 	controllerUsbData.statusReport.leftAnalogY = convToPowerAJoyPos(
 		 TPAD_MAX_Y - tpad_y, 0, TPAD_MAX_Y/2, TPAD_MAX_Y);
-
+	*/
 	// Have Right Trackpad act as Right Analog:
 	trackpadGetLastXY(R_TRACKPAD, &tpad_x, &tpad_y);
-	controllerUsbData.statusReport.rightAnalogX = convToPowerAJoyPos(tpad_x, 
+	while (getRightGripState()) {
+		trackpadGetLastXY(R_TRACKPAD, &tpad_x_2, &tpad_y_2);
+	}
+	tpad_x_diff = std::abs(&tpad_x_2-&tpad_x);
+	tpad_y_diff = std::abs(&tpad_y_2-&tpad_y);
+
+	controllerUsbData.statusReport.rightAnalogX = convToPowerAJoyPos(tpad_x_diff, 
 		0, TPAD_MAX_X/2, TPAD_MAX_X);
 	controllerUsbData.statusReport.rightAnalogY = convToPowerAJoyPos(
-		 TPAD_MAX_Y - tpad_y, 0, TPAD_MAX_Y/2, TPAD_MAX_Y);
+		 TPAD_MAX_Y - tpad_y_diff, 0, TPAD_MAX_Y/2, TPAD_MAX_Y);
 }
 
 /**
